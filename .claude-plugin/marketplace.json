@@ -4,6 +4,9 @@
     "name": "Sean Marchetti",
     "email": "sean.marchetti@gmail.com"
   },
+  "metadata": {
+    "description": "A heads-up display for your Claude Code session"
+  },
   "plugins": [
     {
       "name": "hud",
