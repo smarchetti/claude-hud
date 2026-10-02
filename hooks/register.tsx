@@ -367,7 +367,7 @@ export const register: Register = on => {
     const detail = (key: string, glyph: string, label: string, value: string | undefined, valueColor = color.fg) =>
       value ? (
         <Box key={`detail:${key}`}>
-          <Box width={11}>
+          <Box width={11} flexShrink={0}>
             <Text color={color.comment}>
               {glyph} {label}
             </Text>
@@ -384,7 +384,7 @@ export const register: Register = on => {
       const filled = Math.min(BAR_WIDTH, Math.round((percent / 100) * BAR_WIDTH))
       return (
         <Box key={key}>
-          <Box width={11}>
+          <Box width={11} flexShrink={0}>
             <Text color={color.comment}>
               {glyph} {label}
             </Text>
@@ -393,13 +393,13 @@ export const register: Register = on => {
             <Text color={fillColor(percent)}>{'▄'.repeat(filled)}</Text>
             <Text color={color.barBG}>{'▄'.repeat(BAR_WIDTH - filled)}</Text>
           </Text>
-          <Box width={6} justifyContent="flex-end">
+          <Box width={5} flexShrink={0} justifyContent="flex-end">
             <Text color={fillColor(percent)}>{percent}%</Text>
           </Box>
-          <Box width={SPARK_WIDTH + 1} justifyContent="flex-end">
+          <Box width={SPARK_WIDTH + 1} flexShrink={0} justifyContent="flex-end">
             <Text color={color.comment}>{sparkline(trend)}</Text>
           </Box>
-          <Box flexGrow={1} justifyContent="flex-end">
+          <Box flexGrow={1} justifyContent="flex-end" marginLeft={1}>
             <Text color={color.comment} wrap="truncate-start">
               {tail}
             </Text>
@@ -462,10 +462,10 @@ export const register: Register = on => {
                 {r.name}
               </Text>
             </Box>
-            <Box width={7} justifyContent="flex-end">
+            <Box width={7} flexShrink={0} justifyContent="flex-end">
               <Text color={r.isFree ? color.comment : color.cyan}>{short(r.tokens)}</Text>
             </Box>
-            <Box width={6} justifyContent="flex-end">
+            <Box width={6} flexShrink={0} justifyContent="flex-end">
               <Text color={color.comment}>
                 {s.context ? Math.round((r.tokens * 100) / s.context.max) : 0}%
               </Text>
@@ -481,10 +481,10 @@ export const register: Register = on => {
         )}
         {servers.map(x => (
           <Box key={`server:${x.name}`}>
-            <Box width={2}>
+            <Box width={2} flexShrink={0}>
               <Text color={x.tools > 0 ? color.green : color.orange}>{x.tools > 0 ? '●' : '○'}</Text>
             </Box>
-            <Box width={2}>
+            <Box width={2} flexShrink={0}>
               <Text color={color.comment}>{scopeIcon[x.scope] ?? '?'}</Text>
             </Box>
             <Box flexGrow={1} minWidth={0}>
@@ -492,7 +492,7 @@ export const register: Register = on => {
                 {x.name}
               </Text>
             </Box>
-            <Box width={6} justifyContent="flex-end">
+            <Box width={6} flexShrink={0} justifyContent="flex-end">
               <Text color={x.tools > 0 ? color.cyan : color.comment}>
                 {x.tools > 0 ? `${icon.tools} ${x.tools}` : '–'}
               </Text>
@@ -522,7 +522,7 @@ export const register: Register = on => {
         {detail('folder', icon.folder, 'folder', ws?.folder)}
         {ws?.branch && (
           <Box key="branch">
-            <Box width={11}>
+            <Box width={11} flexShrink={0}>
               <Text color={color.comment}>{icon.branch} branch</Text>
             </Box>
             <Box flexGrow={1} minWidth={0}>
@@ -543,7 +543,7 @@ export const register: Register = on => {
         {header('hooks', 'HOOKS', `${s.hooks.length} ${s.hooks.length === 1 ? 'event' : 'events'}`)}
         {s.hooks.map(hook => (
           <Box key={`hook:${hook.event}`}>
-            <Box width={20}>
+            <Box width={20} flexShrink={0}>
               <Text color={color.fg} wrap="truncate-end">
                 {icon.hook} {hook.event}
               </Text>
