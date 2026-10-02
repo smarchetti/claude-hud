@@ -1,0 +1,18 @@
+{
+  "//": "The API types are written to .claude-plugin/types/ when Claude Code loads the plugin; load it once (claude --plugin-dir .) before running tsc -p .",
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023"],
+    "types": [],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment"
+  },
+  "include": [".claude-plugin/types", "hooks", "types", "tests"]
+}
