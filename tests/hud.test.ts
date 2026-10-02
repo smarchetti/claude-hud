@@ -105,14 +105,14 @@ for (const surface of ['terminal', 'desktop'] as const) {
       return { value: undefined }
     })
 
-    const opened = await $.command.run({ command: 'cc', args: '' } as never)
-    expect(JSON.stringify(opened)).toContain('Session pane opened')
+    const opened = await $.command.run({ command: 'hud', args: '' } as never)
+    expect(JSON.stringify(opened)).toContain('HUD opened')
     const pane = await $.ui.mount({
-      plugin: 'session-pane',
+      plugin: 'hud',
       surface,
       component: 'Pane',
-      requestId: 'session',
-      props: { title: 'Session', isFocused: false, bodyColumns: 48 } as never,
+      requestId: 'hud',
+      props: { title: 'HUD', isFocused: false, bodyColumns: 48 } as never,
     })
     const text = async (key: string) => (await pane.find({ key }))?.text
 
@@ -171,9 +171,9 @@ for (const surface of ['terminal', 'desktop'] as const) {
     // Only server names are read from the config, never their headers.
     expect(drawn).not.toContain('SECRET')
 
-    // /cc again closes it.
-    const closed = await $.command.run({ command: 'cc', args: '' } as never)
-    expect(JSON.stringify(closed)).toContain('Session pane closed')
+    // /hud again closes it.
+    const closed = await $.command.run({ command: 'hud', args: '' } as never)
+    expect(JSON.stringify(closed)).toContain('HUD closed')
     expect(panes).toEqual([])
   })
 }

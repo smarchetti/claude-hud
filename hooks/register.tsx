@@ -12,14 +12,14 @@ import type {
   WorkspaceSummary,
 } from '../types'
 
-const PANE = 'session'
+const PANE = 'hud'
 const REFRESH_MS = 30_000
 const HISTORY = 24
 const BAR_WIDTH = 10
 const SPARK_WIDTH = 6
 const SPARKS = '▁▂▃▄▅▆▇█'
 const empty: Snapshot = { limits: [], servers: [], hooks: [], history: {}, refreshedAt: 0 }
-const snapshot = atom({ plugin: 'session-pane', key: 'snapshot' } as const, empty)
+const snapshot = atom({ plugin: 'hud', key: 'snapshot' } as const, empty)
 
 // The Dracula palette, the same one a Dracula-themed status line draws in.
 const color = {
@@ -291,24 +291,24 @@ async function refresh($: EngineInterface) {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
-      name: 'cc',
-      description: 'Show or hide the session pane: details, usage, context, MCP servers, workspace, hooks',
+      name: 'hud',
+      description: 'Show or hide the HUD: details, usage, context, MCP servers, workspace, hooks',
     })
     void refresh($)
     $.clock.every(REFRESH_MS, () => void refresh($))
     return next(e)
   })
 
-  // /cc toggles the pane: closes it when it's open, opens it fresh when not.
-  on('command.run', { command: 'cc' }, async $ => {
+  // /hud toggles the pane: closes it when it's open, opens it fresh when not.
+  on('command.run', { command: 'hud' }, async $ => {
     const open = (await $.ui.panes()).some(pane => pane.id === PANE)
     if (open) {
       await $.ui.close({ id: PANE })
-      return { text: 'Session pane closed.' }
+      return { text: 'HUD closed.' }
     }
     await refresh($)
-    await $.ui.open({ id: PANE, title: 'Session' })
-    return { text: 'Session pane opened. /cc again closes it.' }
+    await $.ui.open({ id: PANE, title: 'HUD' })
+    return { text: 'HUD opened. /hud again closes it.' }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {

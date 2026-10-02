@@ -1,16 +1,17 @@
 {
-  "name": "session-pane",
+  "name": "hud",
   "version": "0.1.0",
-  "description": "A side pane for your Claude Code session (/cc): details, usage limits, context by category, MCP servers, workspace and hooks",
+  "description": "A heads-up display for your Claude Code session (/hud): details, usage limits, context by category, MCP servers, workspace and hooks",
   "author": {
     "name": "Sean Marchetti",
     "email": "sean.marchetti@gmail.com"
   },
-  "homepage": "https://github.com/smarchetti/claude-session-pane",
-  "repository": "https://github.com/smarchetti/claude-session-pane",
+  "homepage": "https://github.com/smarchetti/claude-hud",
+  "repository": "https://github.com/smarchetti/claude-hud",
   "license": "MIT",
   "keywords": [
     "claude-code",
+    "hud",
     "pane",
     "mod",
     "status-line",

@@ -1,4 +1,4 @@
-// What the session pane draws from: read on /cc, every 30 seconds while the
+// What the HUD draws from: read on /hud, every 30 seconds while the
 // session runs, and from the pane's Refresh button, one section each.
 
 export type McpServerRow = {
@@ -94,7 +94,7 @@ export type Snapshot = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'session-pane': {
+    'hud': {
       snapshot: Snapshot
     }
   }

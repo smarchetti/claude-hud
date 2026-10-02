@@ -1,7 +1,8 @@
-# session-pane
+# hud
 
-A side pane for your [Claude Code](https://claude.com/claude-code) session. Type `/cc` to
-open it, and `/cc` again to close it.
+A heads-up display for your [Claude Code](https://claude.com/claude-code) session: a side
+pane with everything about the run at a glance. Type `/hud` to open it, and `/hud` again to
+close it.
 
 ```
 DETAILS
@@ -60,19 +61,19 @@ It's a Claude Code plugin whose hooks are a TypeScript module, so Claude Code lo
 a folder:
 
 ```bash
-git clone https://github.com/smarchetti/claude-session-pane ~/.claude/plugins-local/session-pane
+git clone https://github.com/smarchetti/claude-hud ~/.claude/plugins-local/claude-hud
 ```
 
 Then add the folder to `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json`, so every
 session loads it, the desktop app's included:
 
 ```json
-{ "env": { "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/plugins-local/session-pane" } }
+{ "env": { "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/plugins-local/claude-hud" } }
 ```
 
-Or load it for one session with `claude --plugin-dir ~/.claude/plugins-local/session-pane`.
+Or load it for one session with `claude --plugin-dir ~/.claude/plugins-local/claude-hud`.
 The repo is also laid out as a plugin marketplace (`/plugin marketplace add
-smarchetti/claude-session-pane`, then `/plugin install session-pane@claude-session-pane`),
+smarchetti/claude-hud`, then `/plugin install hud@hud`),
 but that route hasn't been tested with a hooks module like this one.
 
 ## Develop
