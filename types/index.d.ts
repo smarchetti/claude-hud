@@ -1,5 +1,5 @@
-// What the HUD draws from: read on /hud, every 30 seconds while the
-// session runs, and from the pane's Refresh button, one section each.
+// What the HUD draws from: read on /hud, on each prompt, every 30 seconds
+// while the session runs, and from the pane's Refresh button, one section each.
 
 export type McpServerRow = {
   /** The server's name as /mcp lists it. */

@@ -128,8 +128,9 @@ function configuredServers(user: Json | null, project: Json | null, root: string
   const projects = (user?.projects ?? {}) as Record<string, Json | undefined>
   const scopes = new Map<string, string>()
   for (const name of keys(user?.mcpServers)) scopes.set(name, 'user')
-  for (const name of keys(projects[root]?.mcpServers)) scopes.set(name, 'local')
+  // Local beats project beats user, as Claude Code resolves a name in more than one.
   for (const name of keys(project?.mcpServers)) scopes.set(name, 'project')
+  for (const name of keys(projects[root]?.mcpServers)) scopes.set(name, 'local')
   return scopes
 }
 
@@ -184,7 +185,7 @@ async function workspaceFrom($: EngineInterface, cwd: string, home: string): Pro
     run($, ['git', 'remote', 'get-url', 'origin'], cwd),
   ])
   const ws: WorkspaceSummary = {
-    folder: home && cwd.startsWith(home) ? `~${cwd.slice(home.length)}` : cwd,
+    folder: home && (cwd === home || cwd.startsWith(`${home}/`)) ? `~${cwd.slice(home.length)}` : cwd,
     host: host || undefined,
     ahead: 0,
     behind: 0,

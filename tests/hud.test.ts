@@ -37,7 +37,7 @@ const files: Record<string, string> = {
   '/home/t/.claude.json': JSON.stringify({
     oauthAccount: { emailAddress: 'ada@example.com', organizationName: "ada@example.com's Organization" },
     mcpServers: { linear: { type: 'http' }, neon: { headers: { Authorization: 'Bearer SECRET' } } },
-    projects: { '/work/app': { mcpServers: { 'local-db': {} } } },
+    projects: { '/work/app': { mcpServers: { 'local-db': {}, 'project-tools': {} } } },
   }),
   '/home/t/.claude/settings.json': JSON.stringify({
     effortLevel: 'high',
@@ -157,9 +157,10 @@ for (const surface of ['terminal', 'desktop'] as const) {
     expect(await text('server:claude.ai Gmail')).toBe(`●${i.account2}claude.ai Gmail${i.tools} 1`)
     expect(await text('server:neon')).toBe(`○${i.user}neon–`)
     expect(await text('server:local-db')).toBe(`○${i.local}local-db–`)
-    expect(await text('server:project-tools')).toBe(`○${i.project}project-tools–`)
+    // In .mcp.json and local config both: the local one is what runs.
+    expect(await text('server:project-tools')).toBe(`○${i.local}project-tools–`)
     expect(await text('hint')).toBe('○ not connected · /mcp to sign in')
-    expect(await text('legend')).toBe(`${i.user} user  ${i.project} project  ${i.local} local  ${i.account2} account`)
+    expect(await text('legend')).toBe(`${i.user} user  ${i.local} local  ${i.account2} account`)
 
     // Workspace: folder and branch; the repo in the header.
     expect(await text('workspace')).toBe('WORKSPACEacme/app')
