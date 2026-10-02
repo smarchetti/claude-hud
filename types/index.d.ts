@@ -38,7 +38,7 @@ export type LimitRow = {
 export type ModelSummary = {
   /** As the status line shows it: `Opus 5.5`. */
   name: string
-  /** The effort level from settings, if one is set. */
+  /** The effort the last model request went out with; none before the first. */
   effort?: string
   /** What the session has cost, in US dollars. */
   costUsd?: number
@@ -96,6 +96,8 @@ declare module 'claude-code' {
   interface PluginState {
     'hud': {
       snapshot: Snapshot
+      /** The effort the last model request went out with, or '' before the first. */
+      effort: string
     }
   }
 }

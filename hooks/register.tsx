@@ -20,6 +20,9 @@ const SPARK_WIDTH = 6
 const SPARKS = '▁▂▃▄▅▆▇█'
 const empty: Snapshot = { limits: [], servers: [], hooks: [], history: {}, refreshedAt: 0 }
 const snapshot = atom({ plugin: 'hud', key: 'snapshot' } as const, empty)
+// The effort the last model request went out with: settings can name one the
+// session doesn't run at, so the request is the only source that's always right.
+const effortSent = atom({ plugin: 'hud', key: 'effort' } as const, '')
 
 // The Dracula palette, the same one a Dracula-themed status line draws in.
 const color = {
@@ -282,7 +285,7 @@ async function refresh($: EngineInterface) {
         percent: Math.round(l.percentUsed),
         resetsAt: l.resetsAt ? Date.parse(l.resetsAt) : undefined,
       }))
-    const effort = typeof settings?.effortLevel === 'string' ? settings.effortLevel : undefined
+    const effort = (await read($, effortSent)) || undefined
     const model: ModelSummary = { name: modelName(modelId), effort, costUsd: usage.cost?.usd }
     const account = accountFrom(user, version.version)
 
@@ -317,6 +320,17 @@ export const register: Register = on => {
   on('prompt.submit', async ($, e, next) => {
     void refresh($)
     return next(e)
+  })
+
+  // The effort shows from the first model request on, and changes as soon as
+  // /effort does, without waiting for a refresh.
+  on('turn.step', async function* ($, e, next) {
+    const effort = e.effort
+    if (typeof effort === 'string' && effort !== (await read($, effortSent))) {
+      await update($, effortSent, () => effort)
+      await update($, snapshot, s => (s.model ? { ...s, model: { ...s.model, effort } } : s))
+    }
+    return yield* next(e)
   })
 
   // /hud toggles the pane: closes it when it's open, opens it fresh when not.

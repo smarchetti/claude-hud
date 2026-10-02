@@ -40,6 +40,7 @@ const files: Record<string, string> = {
     projects: { '/work/app': { mcpServers: { 'local-db': {}, 'project-tools': {} } } },
   }),
   '/home/t/.claude/settings.json': JSON.stringify({
+    // Settings can name an effort the session doesn't run at.
     effortLevel: 'high',
     hooks: {
       SessionStart: [{ hooks: [{ type: 'command', command: 'if [ -z "$ORCA_PANE_KEY" ]; then exit 0; fi' }] }],
@@ -111,6 +112,13 @@ for (const surface of ['terminal', 'desktop'] as const) {
       return { value: undefined }
     })
 
+    // A model request at medium effort, as the engine sends it.
+    on('turn.step', async function* (_$, e) {
+      return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn' } as never
+    })
+    const step = $.turn.step({ turnId: 't1', index: 0, model: 'claude-opus-5-5', effort: 'medium', messageCount: 1 } as never)
+    for await (const _ of step);
+
     const opened = await $.command.run({ command: 'hud', args: '' } as never)
     expect(JSON.stringify(opened)).toContain('HUD opened')
     const pane = await $.ui.mount({
@@ -131,7 +139,7 @@ for (const surface of ['terminal', 'desktop'] as const) {
     }
 
     // Details: model, cost, account, version and host, grouped.
-    expect(await text('detail:model')).toBe(`${i.model} modelOpus 5.5 · ${i.effort} high`)
+    expect(await text('detail:model')).toBe(`${i.model} modelOpus 5.5 · ${i.effort} medium`)
     expect(await text('detail:cost')).toBe(`${i.cost} cost$3.46`)
     expect(await text('detail:account')).toBe(`${i.account} accountada · personal`)
     expect(await text('detail:version')).toBe(`${i.version} versionv2.1.287`)
