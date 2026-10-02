@@ -26,11 +26,9 @@ const usage = {
         { name: 'Autocompact buffer', tokens: 33_000, kind: 'buffer', isDeferred: false, color: 'inactive' },
         { name: 'Free space', tokens: 115_877, kind: 'free', isDeferred: false, color: 'inactive' },
       ],
-      mcpTools: [
-        { name: 'mcp__linear__list_issues', serverName: 'linear', tokens: 1200, isLoaded: true },
-        { name: 'mcp__linear__save_issue', serverName: 'linear', tokens: 800, isLoaded: false },
-        { name: 'mcp__claude_ai_Gmail__search', serverName: 'claude.ai Gmail', tokens: 300, isLoaded: false },
-      ],
+      // Empty, as at the start of a session: the breakdown fills in after the
+      // first response, so connected servers must come from the tool list.
+      mcpTools: [],
     },
   },
 } as unknown as SessionUsage
@@ -78,6 +76,14 @@ for (const surface of ['terminal', 'desktop'] as const) {
     on('session.model', async () => ({ value: 'claude-opus-5-5' }))
     on('session.version', async () => ({ value: { version: '2.1.287' } as never }))
     on('session.usage', async () => ({ value: usage }))
+    on('tool.list', async () => ({
+      value: [
+        { name: 'Read', description: 'Reads a file', mcp: false },
+        { name: 'mcp__linear__list_issues', description: '', mcp: true },
+        { name: 'mcp__linear__save_issue', description: '', mcp: true },
+        { name: 'mcp__claude_ai_Gmail__search', description: '', mcp: true },
+      ],
+    }))
     on('fs.read', async (_$, e) => {
       const text = files[e.path]
       if (text === undefined) throw new Error(`no such file: ${e.path}`)

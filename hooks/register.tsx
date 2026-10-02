@@ -115,6 +115,12 @@ async function run($: EngineInterface, argv: string[], cwd?: string) {
   }
 }
 
+// A tool name's server: mcp__<server>__<tool>, the server's name with every
+// character outside [A-Za-z0-9_-] turned into _ ("claude.ai Gmail" is
+// claude_ai_Gmail).
+const toolServer = (tool: string) => tool.split('__')[1] ?? ''
+const wire = (name: string) => name.replace(/[^A-Za-z0-9_-]/g, '_')
+
 // MCP server names from the config files, by scope. Only the keys: never the
 // entries, which can hold tokens in their headers or env.
 function configuredServers(user: Json | null, project: Json | null, root: string) {
@@ -210,8 +216,9 @@ async function workspaceFrom($: EngineInterface, cwd: string, home: string): Pro
 
 async function refresh($: EngineInterface) {
   try {
-    const [usage, modelId, cwd, root, home, version] = await Promise.all([
+    const [usage, tools, modelId, cwd, root, home, version] = await Promise.all([
       $.session.usage({ breakdown: 'summary' }),
+      $.tool.list(),
       $.session.model(),
       $.session.cwd(),
       $.session.root(),
@@ -232,27 +239,31 @@ async function refresh($: EngineInterface) {
       ['local', localSettings],
     ])
 
-    // MCP: the connected servers from the context's tool schemas (which carry
-    // each tool's real server name), then configured ones with no tools.
+    // MCP: the connected servers from the tools the model can call now (ready
+    // from the session's start, and counting tools that load on demand), named
+    // as the config names them; then configured servers with no tools.
     const scopes = configuredServers(user, project, root)
+    const byWire = new Map([...scopes.keys()].map(name => [wire(name), name]))
     const rows = new Map<string, McpServerRow>()
-    const b = usage.context.breakdown
-    for (const tool of b?.mcpTools ?? []) {
-      const row = rows.get(tool.serverName) ?? {
-        name: tool.serverName,
-        scope:
-          scopes.get(tool.serverName) ??
-          (tool.serverName.startsWith('claude.ai ') ? 'account' : 'plugin'),
+    for (const tool of tools.filter(t => t.mcp)) {
+      const id = toolServer(tool.name)
+      const name = byWire.get(id) ?? (id.startsWith('claude_ai_') ? `claude.ai ${id.slice(10).replace(/_/g, ' ')}` : id)
+      const row = rows.get(name) ?? {
+        name,
+        scope: scopes.get(name) ?? (name.startsWith('claude.ai ') ? 'account' : 'plugin'),
         tools: 0,
       }
       row.tools++
-      rows.set(tool.serverName, row)
+      rows.set(name, row)
     }
     for (const [name, scope] of scopes) {
       if (!rows.has(name)) rows.set(name, { name, scope, tools: 0 })
     }
     const servers = [...rows.values()].sort((x, y) => x.name.localeCompare(y.name))
 
+    // The breakdown fills in after the model's first response; until then the
+    // context section shows a dash.
+    const b = usage.context.breakdown
     const context: ContextSummary | undefined = b && {
       used: b.totalTokens,
       max: b.rawMaxTokens,
@@ -296,6 +307,14 @@ export const register: Register = on => {
     })
     void refresh($)
     $.clock.every(REFRESH_MS, () => void refresh($))
+    return next(e)
+  })
+
+  // Servers that finish connecting after the session starts, and the context
+  // breakdown, which fills in after the first response, show up on the next
+  // prompt instead of waiting for the timer.
+  on('prompt.submit', async ($, e, next) => {
+    void refresh($)
     return next(e)
   })
 
